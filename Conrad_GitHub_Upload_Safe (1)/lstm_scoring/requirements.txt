@@ -1,3 +1,0 @@
-ultralytics==8.4.150
-openpyxl==3.1.5
-matplotlib==3.11.2
