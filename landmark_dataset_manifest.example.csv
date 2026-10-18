@@ -1,0 +1,4 @@
+sample_id,landmarks_csv,label,subject_id,exercise_id,split
+quadruped_001,/absolute/path/to/sample_001_landmarks.csv,Correct Execution,participant_001,quadruped,train
+quadruped_002,/absolute/path/to/sample_002_landmarks.csv,Compensatory Guarding,participant_002,quadruped,train
+quadruped_003,/absolute/path/to/sample_003_landmarks.csv,Reduced Range of Motion,participant_003,quadruped,validation

@@ -1,0 +1,16 @@
+.venv/
+.venv-mediapipe/
+results/
+__pycache__/
+*.mp4
+*.mov
+*.avi
+
+# Local metadata, generated outputs, and separate video repository
+.DS_Store
+runs/
+TrainingVideos/
+*.py[cod]
+.env
+.env.*
+!.env.example
