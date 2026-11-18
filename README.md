@@ -147,6 +147,38 @@ and `Reduced Range of Motion`. Labels should be assigned by qualified reviewers
 using a written rubric. Do not infer an injury diagnosis from pose video alone.
 Use participant-independent train, validation, and held-out test splits.
 
+### Temporal Convolutional Network
+
+The TCN classifier uses causal, dilated one-dimensional convolutions and
+residual connections to learn patterns across time. Train it from the same
+reviewed landmark tensor used by the multiclass LSTM:
+
+```bash
+source .venv/bin/activate
+python train_landmark_tcn_classifier.py results/landmark-dataset.npz \
+  --output-dir results/landmark-tcn-classifier \
+  --channels 64,64,64,64 \
+  --kernel-size 3
+```
+
+Analyze a new video over overlapping temporal windows:
+
+```bash
+python analyze_video_with_tcn.py "/absolute/path/to/video.mp4" \
+  results/landmark-tcn-classifier/landmark_tcn_classifier.pt \
+  --output-dir results/tcn-temporal-analysis/video-name \
+  --window-frames 128 \
+  --stride-frames 16
+```
+
+The video command first runs MediaPipe using `.venv-mediapipe`, then applies the
+TCN using `.venv`. If landmarks have already been extracted, supply the
+`*_landmarks.csv` file instead of the video. Outputs include window-level class
+probabilities, a temporal probability graph, visibility-quality results, and a
+JSON summary. A valid trained checkpoint requires multiple clinician-reviewed
+recordings in every class; the unreviewed example tensor cannot train a useful
+classifier by itself.
+
 ## Analyze a video
 
 From Terminal:
@@ -205,3 +237,70 @@ overlay may interfere with a second inference pass.
 The COCO pose model estimates visible 2D keypoints; it does not diagnose injury
 or measure true 3D joint angles. Validate camera placement, repeatability, and
 accuracy with qualified clinicians before using results for treatment decisions.
+
+## Local web interface
+
+Conrad now includes a responsive HTML/CSS/JavaScript interface with a Flask
+backend. It provides a recorded LSTM example, video drag-and-drop uploads,
+queued background analysis, annotated video playback, angle charts, measurement
+tables, and CSV/JSON/video downloads.
+
+Start it from the project directory:
+
+```bash
+.venv/bin/python -m pip install -r requirements-web.txt
+.venv/bin/python prepare_web_demo.py
+.venv/bin/python web_app.py
+```
+
+Open **http://127.0.0.1:5050**. Use `PORT=5051` to choose another port. The existing
+`.venv` and `.venv-mediapipe` environments are used by their corresponding
+analysis scripts; install the dependencies documented above if setting up a
+fresh checkout. Both environments need Matplotlib for charts. The web dependencies
+are installed only in `.venv`; `imageio-ffmpeg` provides the H.264 encoder used for
+browser playback.
+
+Available analysis methods:
+
+- **Compare two videos with LSTM:** upload your movement video and a reference
+  video of the same exercise. The server extracts full-body pose from both,
+  trains a new LSTM autoencoder on the uploaded reference, and evaluates deviation
+  in the movement recording. It never substitutes the bundled example checkpoint.
+  Use at least 214 decoded reference frames and 64 movement frames (at 30 fps,
+  at least 8 seconds and 3 seconds respectively), comparable camera views and
+  frame rates, and visible joints. At least three common angles must have 60%
+  coverage in both clips. Frame rate and exercise speed can affect scores.
+  Results include a side-by-side video with a deviation timeline, window scores,
+  joint deviations, training history, and the model trained for that pair.
+  This remains a single-reference research comparison, not a clinical assessment.
+- **Full-body joint angles:** MediaPipe landmarks, angle timeline and coverage.
+- **Wrist movement:** left/right wrist angles and range of motion.
+- **YOLO joint angles:** YOLO pose detection and joint-angle measurements.
+
+The example preparation script converts
+`results/lstm-prototype/quadruped_IMG_6086/IMG_6086_reviewer_comparison.mp4`
+to a browser-compatible recording and poster under `results/web-demo/`. Its
+metadata comes from the adjacent `summary.json`. These example assets are local
+and ignored by Git; a fresh clone needs them to show the recorded demonstration.
+Without them the example is marked unavailable, but uploaded-pair LSTM comparison
+still works when the Python analysis environments are installed.
+
+Uploads accept MP4/MOV/AVI, up to 250 MB per video (500 MB per pair). One job runs at a time, with up to two
+additional queued jobs. Uploads and results are kept under `results/web/<job-id>/`
+until removed manually while the server is stopped. They are excluded from Git.
+Refresh during analysis resumes status polling within the same browser tab.
+Interrupted jobs are marked failed on server restart. Pose processing has a
+one-hour timeout per clip; LSTM training has a one-hour timeout and video
+rendering/conversion each have a 30-minute timeout.
+
+This server is bound to localhost and intended for a single computer. It is not
+an Internet deployment: public use needs a Python/model hosting environment,
+authentication, per-user access controls, storage retention, and a durable job
+queue. A static HTML host alone cannot execute these Python models.
+
+Run backend checks with:
+
+```bash
+.venv/bin/python -m unittest discover -s tests -v
+node --check web/static/app.js
+```

@@ -14,3 +14,6 @@ TrainingVideos/
 .env
 .env.*
 !.env.example
+
+# Generated design artifacts
+output/

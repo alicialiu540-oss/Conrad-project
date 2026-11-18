@@ -27,6 +27,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("window_scores_csv", type=Path)
     parser.add_argument("summary_json", type=Path)
     parser.add_argument("output_video", type=Path)
+    parser.add_argument("--model-label", default="LSTM", help="Label shown in the reviewer display")
     return parser.parse_args()
 
 
@@ -82,6 +83,7 @@ def draw_chart(
     errors: np.ndarray,
     threshold: float,
     current_time: float,
+    model_label: str,
 ) -> None:
     maximum = max(float(errors.max()), threshold) * 1.08
     x_values = CHART_X + (times / max(times[-1], 1e-6) * CHART_W).astype(int)
@@ -93,7 +95,7 @@ def draw_chart(
     cv2.polylines(canvas, [points], False, (225, 160, 55), 3, cv2.LINE_AA)
     cursor_x = int(CHART_X + min(max(current_time / max(times[-1], 1e-6), 0), 1) * CHART_W)
     cv2.line(canvas, (cursor_x, CHART_Y), (cursor_x, CHART_Y + CHART_H), (240, 240, 240), 2)
-    text(canvas, "LSTM reconstruction error over movement time", (CHART_X, CHART_Y - 13), 0.55)
+    text(canvas, f"{model_label} reconstruction error over movement time", (CHART_X, CHART_Y - 13), 0.55)
     text(canvas, "reference threshold", (CHART_X + CHART_W - 180, threshold_y - 7), 0.42, (110, 145, 255))
     text(canvas, "0 s", (CHART_X, CHART_Y + CHART_H + 25), 0.42, (180, 180, 180))
     text(canvas, f"{times[-1]:.1f} s", (CHART_X + CHART_W - 45, CHART_Y + CHART_H + 25), 0.42, (180, 180, 180))
@@ -147,7 +149,7 @@ def main() -> None:
         text(canvas, "MOVEMENT BEING REVIEWED", (550, 38), 0.65)
 
         status_color = (70, 165, 245) if above else (95, 205, 120)
-        text(canvas, "LSTM similarity", (1080, 82), 0.56)
+        text(canvas, f"{args.model_label} similarity", (1080, 82), 0.56)
         text(canvas, f"{similarity:5.1f} / 100", (1080, 123), 0.82, status_color, 2)
         text(canvas, "Prototype index", (1080, 150), 0.45, (175, 175, 175))
         text(canvas, "Deviation error", (1080, 192), 0.50)
@@ -161,7 +163,7 @@ def main() -> None:
             label = str(item["angle"]).replace("_", " ")
             text(canvas, f"{label}: {item['mae_deg']:.1f} deg", (1080, 400 + 22 * offset), 0.40, (195, 195, 195))
 
-        draw_chart(canvas, scores["time"], scores["error"], threshold, current_time)
+        draw_chart(canvas, scores["time"], scores["error"], threshold, current_time, args.model_label)
         text(canvas, "Engineering comparison only; not a clinical pass/fail score.", (70, 704), 0.43, (170, 170, 170))
         writer.write(canvas)
 

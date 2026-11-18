@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Explore movement with video pose analysis and an experimental LSTM reference comparison.">
+  <title>Conrad · Movement in focus</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</head>
+<body>
+<a class="skip" href="#analyze">Skip to video upload</a>
+<header class="header wrap">
+  <a class="brand" href="#"><span class="brand-icon" aria-hidden="true">✳</span> conrad<span class="brand-dot">.</span></a>
+  <nav aria-label="Main navigation"><a href="#example">See it in action</a><a href="#how-it-works">How it works</a><a class="nav-cta" href="#analyze">Analyze a video <span aria-hidden="true">↗</span></a></nav>
+</header>
+<main>
+<section class="hero wrap">
+  <div class="hero-copy"><span class="eyebrow"><span class="dot"></span> A CLOSER LOOK AT MOVEMENT</span>
+    <h1>Every movement<br>tells a <em>story.</em></h1>
+    <p class="lead">Turn exercise videos into a clearer picture of how you move. Explore joint angles, follow motion over time, and compare patterns with our LSTM research model.</p>
+    <div class="actions"><a class="button primary" href="#analyze">Analyze your movement <span aria-hidden="true">↗</span></a><a class="text-link" href="#example">Watch the example <span aria-hidden="true">↓</span></a></div>
+    <div class="hero-note"><span aria-hidden="true">◉</span> Thoughtful technology. Movement-first insights.</div>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <svg viewBox="0 0 500 440" fill="none"><defs><linearGradient id="wash" x2="1" y2="1"><stop stop-color="#e6f1df"/><stop offset="1" stop-color="#cde4db"/></linearGradient></defs><rect x="12" y="12" width="476" height="416" rx="160" fill="url(#wash)"/><circle cx="250" cy="219" r="159" stroke="#fff" stroke-opacity=".65"/><circle cx="250" cy="219" r="119" stroke="#fff" stroke-opacity=".65"/><path d="M58 339H440M250 35V401" stroke="#fff" stroke-dasharray="4 8"/>
+    <path d="M219 178L270 198L303 252L346 278M225 182L178 223L119 222M270 198L241 261L187 294L171 352M241 261L286 305L350 318" stroke="#588d79" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/><circle cx="207" cy="135" r="29" fill="#588d79"/>
+    <path d="M219 178L270 198L303 252L346 278M219 178L178 223L119 222M270 198L241 261L187 294L171 352M241 261L286 305L350 318" stroke="#dff5af" stroke-width="3"/>
+    <g fill="#f7ffd9" stroke="#2c6554" stroke-width="2"><circle cx="219" cy="178" r="6"/><circle cx="270" cy="198" r="6"/><circle cx="303" cy="252" r="6"/><circle cx="346" cy="278" r="6"/><circle cx="178" cy="223" r="6"/><circle cx="119" cy="222" r="6"/><circle cx="241" cy="261" r="6"/><circle cx="187" cy="294" r="6"/><circle cx="171" cy="352" r="6"/><circle cx="286" cy="305" r="6"/><circle cx="350" cy="318" r="6"/></g>
+    <path d="M287 284Q265 298 273 315" stroke="#fff" stroke-width="2"/>
+    </svg>
+    <div class="art-label label-top"><span class="dot"></span> MOVEMENT, MADE VISIBLE</div><div class="art-label label-bottom"><span class="mini-wave">⌁</span><div>From motion to meaning<small>Pose tracking · Temporal patterns</small></div></div>
+    <span class="illustration-note">Illustration of pose tracking</span>
+  </div>
+</section>
+<div class="principles wrap"><span><b>01</b> See your movement</span><span><b>02</b> Understand the patterns</span><span><b>03</b> Explore the details</span></div>
+<section id="example" class="section wrap">
+  <div class="section-heading"><div><span class="eyebrow">THE PROGRAM IN PRACTICE</span><h2>A movement. A reference.<br>A new perspective.</h2></div><p>See a real quadruped exercise compared with a reference recording. The timeline shows where the LSTM model detects different movement patterns.</p></div>
+  <div class="example-grid"><div class="video-card"><div class="card-bar"><span><i class="dot"></i> Recorded analysis</span><span class="pill">QUADRUPED EXERCISE</span></div><video id="example-video" controls playsinline preload="metadata" aria-label="Example LSTM analysis, showing reference and reviewed movement"></video><p id="example-fallback" hidden>The example recording is not installed on this server. You can still upload a video below.</p><div class="video-caption"><span>Reference + movement + LSTM timeline</span><span>Research demonstration</span></div></div>
+    <aside class="example-insights"><span class="eyebrow">WHAT YOU’RE SEEING</span><h3>Patterns across time,<br>not just one frame.</h3><p>The model looks at sequences of joint angles and angular velocity to compare the recording with its learned reference.</p><div class="example-stats"><div><strong id="example-windows">—</strong><span>movement windows</span></div><div><strong id="example-features">—</strong><span>joint-angle features</span></div></div><div class="soft-note"><span class="note-symbol">i</span><p>Different doesn’t mean incorrect. This prototype measures reference similarity, not movement safety or rehabilitation quality.</p></div></aside></div>
+</section>
+<section class="analyze-section" id="analyze"><div class="wrap"><div class="section-heading"><div><span class="eyebrow">YOUR TURN</span><h2>Put your movement in focus.</h2></div><p>Upload your movement and a reference video. We’ll compare their movement patterns and show where they differ.</p></div>
+<div class="workspace"><form id="upload-form" class="upload-card"><div class="step-title"><span>01</span><h3>Choose your movement video</h3></div>
+  <label class="dropzone" id="dropzone" for="video-file"><svg width="42" height="42" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 27V9m-7 7 7-7 7 7M8 26v6h24v-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><strong id="file-title">Drop your video here</strong><span id="file-detail">or <u>browse files</u></span><small>MP4, MOV or AVI · Up to 250 MB</small><input id="video-file" name="video" type="file" accept=".mp4,.mov,.avi" aria-label="Choose exercise video"></label>
+  <div id="reference-upload"><div class="step-title second"><span>02</span><h3>Choose your reference video</h3></div>
+  <label class="dropzone" id="reference-dropzone" for="reference-file"><strong id="reference-title">Drop your reference video here</strong><span id="reference-detail">or <u>browse files</u></span><small>MP4, MOV or AVI · Up to 250 MB</small><input id="reference-file" name="reference" type="file" accept=".mp4,.mov,.avi" aria-label="Choose reference video"></label>
+  <p class="field-help">Use the same exercise and a similar camera angle and frame rate. Reference: at least 214 frames (8 seconds at 30 fps). Your movement: at least 64 frames (3 seconds at 30 fps).</p></div>
+  <div class="step-title second"><span>03</span><h3>Choose your analysis</h3></div><label class="sr-only" for="mode">Analysis method</label><select id="mode" name="mode"><option value="lstm">Compare two videos with LSTM</option><option value="body">Full-body joint angles</option><option value="wrist">Wrist movement</option><option value="yolo">YOLO joint angles</option></select><p id="mode-help" class="field-help">Upload both videos. A new LSTM learns from your reference recording and measures how your movement differs over time.</p>
+  <button id="submit" class="button primary full" type="submit">Analyze video <span aria-hidden="true">↗</span></button><p class="local-note">Processed on this computer. Uploads and results stay in the local project folder.</p><p id="form-error" class="error" role="alert" hidden></p>
+</form><div class="results-card" id="result-panel"><div class="card-bar"><span>YOUR ANALYSIS</span><span id="status-badge" class="pill">READY WHEN YOU ARE</span></div>
+ <div id="empty-state" class="empty-state"><div class="empty-icon" aria-hidden="true">⌁</div><h3>A little movement.<br>A lot to discover.</h3><p>Your annotated video, angle charts, and measurements will appear here.</p><div class="result-tags"><span>Pose tracking</span><span>Angle timelines</span><span>CSV exports</span></div></div>
+ <div id="progress-panel" hidden aria-live="polite"><h3 id="progress-title">Uploading your video…</h3><p id="progress-detail">Keep this page open while your upload completes.</p><progress id="progress" max="100"></progress><p class="field-help">Analysis runs one video at a time. Longer videos may take a few minutes.</p></div>
+ <div id="result-content" hidden><h3 id="result-name"></h3><p id="result-reference" class="field-help" hidden></p><p id="result-warning" class="soft-note" hidden></p><video id="result-video" controls playsinline preload="metadata" hidden aria-label="Your annotated movement video"></video><div id="metrics" class="metrics"></div><div id="lstm-result" class="lstm-result" hidden></div><img id="deviation-chart" alt="LSTM deviation over time against the uploaded reference" hidden><img id="result-chart" alt="Joint angles over the uploaded video timeline" hidden><details><summary>Joint measurements</summary><div class="table-scroll"><table><thead><tr><th>Joint</th><th>Min</th><th>Max</th><th>Range</th><th>Coverage</th></tr></thead><tbody id="joint-rows"></tbody></table></div></details><h4>Download your results</h4><div id="downloads" class="downloads"></div></div>
+ <div id="failure" hidden role="alert"><h3>We couldn’t finish this analysis.</h3><p id="failure-message"></p><a id="log-link" target="_blank" rel="noopener">View analysis log ↗</a><button id="retry" type="button" class="button secondary">Try again</button></div>
+</div></div></div></section>
+<section id="how-it-works" class="section wrap"><span class="eyebrow">SIMPLE STEPS. MEANINGFUL DETAIL.</span><h2>From recording to understanding.</h2><div class="how-grid"><article><span class="step-number">01 /</span><h3>Record naturally</h3><p>Place your camera somewhere steady, use good lighting, and keep the joints you want to analyze in view.</p></article><article><span class="step-number">02 /</span><h3>Let motion become data</h3><p>Our program detects body landmarks and calculates joint angles frame by frame. The LSTM option learns from your uploaded reference and compares the two movement sequences.</p></article><article><span class="step-number">03 /</span><h3>Explore your analysis</h3><p>Watch the annotated video, inspect angle timelines, and download your measurements for further research.</p></article></div></section>
+<div class="research-note wrap"><span class="note-symbol">i</span><p><strong>Built for exploration, with care.</strong> Conrad is a research prototype. Video-based angles are 2D estimates affected by camera position and visibility. Results are not a diagnosis or a substitute for a qualified clinician’s assessment.</p></div>
+</main><footer class="wrap"><a class="brand" href="#">conrad<span class="brand-dot">.</span></a><p>Movement in focus. People at the center.</p><span>RESEARCH PROTOTYPE</span></footer>
+</body></html>
